@@ -2,6 +2,9 @@ package pl.itacademy;
 
 import org.apache.commons.cli.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Parser1 implements Parser {
     private Options options;
 
@@ -15,28 +18,32 @@ public class Parser1 implements Parser {
     }
 
     @Override
-    public CommandLineParams parseCmdLine(String[] args) throws ParseException {
-        CommandLineParser parser = new DefaultParser();
-        CommandLine cmd = parser.parse(options, args);
-        CommandLineParams params = new CommandLineParams();
-        params.setAction(cmd.getOptionValue("action"));
-        params.setCount(cmd.getOptionValue("count"));
-        params.setDictionary(cmd.getOptionValue("dictionary"));
-        params.setInput(cmd.getOptionValue("input"));
-        params.setOutput(cmd.getOptionValue("output"));
-        checkRequiredParameters(params);
-        return params;
+    public Map<String, String> parseCmdLine(String[] args) {
+        try {
+            CommandLineParser parser = new DefaultParser();
+            CommandLine cmd = parser.parse(options, args);
+            Map<String, String> params = new HashMap<>();
+            params.put("action", cmd.getOptionValue("action"));
+            params.put("count", cmd.getOptionValue("count"));
+            params.put("dictionary", cmd.getOptionValue("dictionary"));
+            params.put("input", cmd.getOptionValue("input"));
+            params.put("output", cmd.getOptionValue("output"));
+            checkRequiredParameters(params);
+            return params;
+        } catch (ParseException e) {
+            throw new IllegalArgumentException(e.getCause());
+        }
     }
 
-    private void checkRequiredParameters(CommandLineParams params) throws ParseException {
-        if ("generate".equalsIgnoreCase(params.getAction())) {
-            if (params.getCount() == null || params.getDictionary() == null || params.getOutput() == null) {
-                throw new ParseException("Mandatory parameters missing");
+    private void checkRequiredParameters(Map<String, String> params) {
+        if ("generate".equalsIgnoreCase(params.get("action"))) {
+            if (!params.containsKey("count") || !params.containsKey("dictionary") || !params.containsKey("output")) {
+                throw new IllegalArgumentException("Mandatory parameters missing");
             }
         }
-        if ("analyze".equalsIgnoreCase(params.getAction())) {
-            if (params.getInput() == null) {
-                throw new ParseException("Mandatory parameters missing");
+        if ("analyze".equalsIgnoreCase(params.get("action"))) {
+            if (!params.containsKey("input")) {
+                throw new IllegalArgumentException("Mandatory parameters missing");
             }
         }
     }

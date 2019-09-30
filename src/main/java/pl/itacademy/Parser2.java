@@ -4,38 +4,27 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Parser2 implements Parser {
-    private Map<String, String> makeParamsMap(String[] args) {
-        Map<String, String> map = new HashMap<>();
+    @Override
+    public Map<String, String> parseCmdLine(String[] args) {
+        Map<String, String> params = new HashMap<>();
         for (int i = 0; i < args.length; i += 2) {
             String key = args[i].replace("-", "");
             String value = args[i + 1];
-            map.put(key, value);
+            params.put(key, value);
         }
-        System.out.println(map);
-        return map;
-    }
-
-    @Override
-    public CommandLineParams parseCmdLine(String[] args) {
-        Map<String, String> paramsMap = makeParamsMap(args);
-        CommandLineParams params = new CommandLineParams();
-        params.setAction(paramsMap.get("action"));
-        params.setCount(paramsMap.get("count"));
-        params.setDictionary(paramsMap.get("dictionary"));
-        params.setInput(paramsMap.get("input"));
-        params.setOutput(paramsMap.get("output"));
         checkRequiredParameters(params);
+        System.out.println(params);
         return params;
     }
 
-    private void checkRequiredParameters(CommandLineParams params) {
-        if ("generate".equalsIgnoreCase(params.getAction())) {
-            if (params.getCount() == null || params.getDictionary() == null || params.getOutput() == null) {
+    private void checkRequiredParameters(Map<String, String> params) {
+        if ("generate".equalsIgnoreCase(params.get("action"))) {
+            if (!params.containsKey("count") || !params.containsKey("dictionary") || !params.containsKey("output")) {
                 throw new IllegalArgumentException("Mandatory parameters missing");
             }
         }
-        if ("analyze".equalsIgnoreCase(params.getAction())) {
-            if (params.getInput() == null) {
+        if ("analyze".equalsIgnoreCase(params.get("action"))) {
+            if (!params.containsKey("input")) {
                 throw new IllegalArgumentException("Mandatory parameters missing");
             }
         }

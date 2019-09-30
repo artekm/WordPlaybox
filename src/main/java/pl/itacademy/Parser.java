@@ -2,8 +2,10 @@ package pl.itacademy;
 
 import org.apache.commons.cli.ParseException;
 
+import java.util.Map;
+
 public interface Parser {
-    CommandLineParams parseCmdLine(String[] args) throws ParseException;
+    Map<String, String> parseCmdLine(String[] args);
 
     void printHelp();
 }
