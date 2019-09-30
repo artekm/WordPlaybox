@@ -3,7 +3,7 @@ package pl.itacademy;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Parser2 implements Parser{
+public class Parser2 implements Parser {
     private Map<String, String> makeParamsMap(String[] args) {
         Map<String, String> map = new HashMap<>();
         for (int i = 0; i < args.length; i += 2) {

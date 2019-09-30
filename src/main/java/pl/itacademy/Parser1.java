@@ -2,7 +2,7 @@ package pl.itacademy;
 
 import org.apache.commons.cli.*;
 
-public class Parser1 implements Parser{
+public class Parser1 implements Parser {
     private Options options;
 
     public Parser1() {

@@ -8,7 +8,7 @@ public class App {
             Generator generator = new Generator2();
             generator.generateWords(Integer.valueOf(params.getCount()), params.getDictionary(), params.getOutput());
         } else if ("analyze".equalsIgnoreCase(params.getAction())) {
-            Analyzer analyzer = new Analyzer1();
+            Analyzer analyzer = new Analyzer2();
             analyzer.analyzeWords(params.getInput());
         } else
             parser.printHelp();
