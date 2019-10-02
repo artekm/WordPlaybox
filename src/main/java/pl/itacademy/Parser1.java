@@ -35,19 +35,6 @@ public class Parser1 implements Parser {
         }
     }
 
-    private void checkRequiredParameters(Map<String, String> params) {
-        if ("generate".equalsIgnoreCase(params.get("action"))) {
-            if (!params.containsKey("count") || !params.containsKey("dictionary") || !params.containsKey("output")) {
-                throw new IllegalArgumentException("Mandatory parameters missing");
-            }
-        }
-        if ("analyze".equalsIgnoreCase(params.get("action"))) {
-            if (!params.containsKey("input")) {
-                throw new IllegalArgumentException("Mandatory parameters missing");
-            }
-        }
-    }
-
     @Override
     public void printHelp() {
         HelpFormatter formatter = new HelpFormatter();

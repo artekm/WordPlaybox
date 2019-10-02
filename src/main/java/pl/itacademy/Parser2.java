@@ -13,21 +13,7 @@ public class Parser2 implements Parser {
             params.put(key, value);
         }
         checkRequiredParameters(params);
-        System.out.println(params);
         return params;
-    }
-
-    private void checkRequiredParameters(Map<String, String> params) {
-        if ("generate".equalsIgnoreCase(params.get("action"))) {
-            if (!params.containsKey("count") || !params.containsKey("dictionary") || !params.containsKey("output")) {
-                throw new IllegalArgumentException("Mandatory parameters missing");
-            }
-        }
-        if ("analyze".equalsIgnoreCase(params.get("action"))) {
-            if (!params.containsKey("input")) {
-                throw new IllegalArgumentException("Mandatory parameters missing");
-            }
-        }
     }
 
     @Override
