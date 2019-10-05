@@ -1,8 +1,11 @@
 package pl.itacademy;
 
+import org.springframework.stereotype.Component;
+
 import java.util.HashMap;
 import java.util.Map;
 
+@Component
 public class Parser2 implements Parser {
     @Override
     public Map<String, String> parseCmdLine(String[] args) {

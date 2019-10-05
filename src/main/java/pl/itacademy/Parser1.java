@@ -1,14 +1,16 @@
 package pl.itacademy;
 
 import org.apache.commons.cli.*;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Component
 public class Parser1 implements Parser {
-    private Options options;
+    private final Options options;
 
-    public Parser1() {
+    Parser1() {
         options = new Options();
         options.addOption("action", "action", true, "action (generate/analyze)");
         options.addOption("count", "count", true, "desired words count");
@@ -23,11 +25,11 @@ public class Parser1 implements Parser {
             CommandLineParser parser = new DefaultParser();
             CommandLine cmd = parser.parse(options, args);
             Map<String, String> params = new HashMap<>();
-            params.put("action", cmd.getOptionValue("action"));
-            params.put("count", cmd.getOptionValue("count"));
-            params.put("dictionary", cmd.getOptionValue("dictionary"));
-            params.put("input", cmd.getOptionValue("input"));
-            params.put("output", cmd.getOptionValue("output"));
+            if (cmd.hasOption("action")) params.put("action", cmd.getOptionValue("action"));
+            if (cmd.hasOption("count")) params.put("count", cmd.getOptionValue("count"));
+            if (cmd.hasOption("dictionary")) params.put("dictionary", cmd.getOptionValue("dictionary"));
+            if (cmd.hasOption("input")) params.put("input", cmd.getOptionValue("input"));
+            if (cmd.hasOption("output")) params.put("output", cmd.getOptionValue("output"));
             checkRequiredParameters(params);
             return params;
         } catch (ParseException e) {

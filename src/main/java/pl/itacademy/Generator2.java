@@ -1,5 +1,7 @@
 package pl.itacademy;
 
+import org.springframework.stereotype.Component;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -8,6 +10,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Random;
 
+@Component
 public class Generator2 implements Generator {
     @Override
     public void generateWords(Integer count, String dictionaryFilename, String outputFileName) throws IOException {
