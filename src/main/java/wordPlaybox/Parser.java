@@ -1,4 +1,4 @@
-package pl.itacademy;
+package wordPlaybox;
 
 import java.util.Map;
 
