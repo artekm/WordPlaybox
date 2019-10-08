@@ -8,15 +8,20 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Component
-@SuppressWarnings("Convert2MethodRef")
 public class GeneratorImpl implements Generator {
+    private Random random = new Random();
+
     @Override
     public List<String> generateWords(Integer count, List<String> dictionary) {
-        Random rnd = new Random();
-        return IntStream.generate(() -> rnd.nextInt(dictionary.size()))
+        return IntStream.generate(() -> random.nextInt(dictionary.size()))
                         .limit(count)
-                        .mapToObj(index -> dictionary.get(index))
+                        .mapToObj(dictionary::get)
                         .collect(Collectors.toList());
+    }
+
+    @Override
+    public String nextRandomWord(List<String> dictionary) {
+        return dictionary.get(random.nextInt(dictionary.size()));
     }
 }
 

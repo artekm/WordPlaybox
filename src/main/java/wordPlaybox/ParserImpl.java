@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-//@SuppressWarnings("Convert2MethodRef")
 @Component
 public class ParserImpl implements Parser {
     private final Options options;

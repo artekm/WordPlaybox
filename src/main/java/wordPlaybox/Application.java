@@ -11,6 +11,12 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.TreeMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 @SpringBootApplication
 public class Application implements CommandLineRunner {
@@ -41,9 +47,42 @@ public class Application implements CommandLineRunner {
     public void run(String... args) throws Exception {
         Map<String, String> params = parser.parseCmdLine(args);
         System.out.println(params);
-        String action = params.getOrDefault("action", "");
         Instant startTime = Instant.now();
+        String action = params.getOrDefault("action", "");
         switch (action) {
+            case "concurrent": {
+                List<String> dictionary = Files.readAllLines(Paths.get(params.get("dictionary")));
+                Integer count = Integer.valueOf(params.get("count"));
+                Queue<String> queue = new ConcurrentLinkedQueue<>();
+                ExecutorService es = Executors.newFixedThreadPool(2);
+                es.execute(() -> {
+                    for (int i = 0; i < count; i++) {
+                        queue.offer(generator.nextRandomWord(dictionary));
+                    }
+                    queue.offer("KILL_ME");
+                });
+                Future<Map<String, Integer>> result = es.submit(() -> {
+                    String word;
+                    Map<String, Integer> wordsOccurrence = new TreeMap<>();
+                    do {
+                        while ((word = queue.poll()) == null) {
+                            try {
+                                Thread.sleep(10);
+                            } catch (InterruptedException e) {
+                                return wordsOccurrence;
+                            }
+                        }
+                        if (word.equalsIgnoreCase("KILL_ME")) {
+                            return wordsOccurrence;
+                        }
+                        Integer oldCount = wordsOccurrence.getOrDefault(word, 0);
+                        wordsOccurrence.put(word, oldCount + 1);
+                    } while (true);
+                });
+                System.out.println(result.get());
+                es.shutdown();
+                break;
+            }
             case "generate": {
                 List<String> dictionary = Files.readAllLines(Paths.get(params.get("dictionary")));
                 List<String> randomWords = generator.generateWords(Integer.valueOf(params.get("count")), dictionary);
