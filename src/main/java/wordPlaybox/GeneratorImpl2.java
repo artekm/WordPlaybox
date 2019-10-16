@@ -1,24 +1,22 @@
 package wordPlaybox;
 
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Component
-@Primary
-public class GeneratorImpl implements Generator {
+public class GeneratorImpl2 implements Generator {
     private Random random = new Random();
 
     @Override
     public List<String> generateWords(Integer count, List<String> dictionary) {
-        return IntStream.generate(() -> random.nextInt(dictionary.size()))
-                        .limit(count)
-                        .mapToObj(dictionary::get)
-                        .collect(Collectors.toList());
+        List<String> randomWords = new ArrayList<>();
+        for (int num = 0; num < count; num++) {
+            randomWords.add(dictionary.get(random.nextInt(dictionary.size())));
+        }
+        return randomWords;
     }
 
     @Override
@@ -26,4 +24,3 @@ public class GeneratorImpl implements Generator {
         return dictionary.get(random.nextInt(dictionary.size()));
     }
 }
-

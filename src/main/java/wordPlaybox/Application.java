@@ -11,33 +11,20 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
-import java.util.TreeMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 @SpringBootApplication
 public class Application implements CommandLineRunner {
+    @Autowired
     private Parser parser;
+
+    @Autowired
     private Generator generator;
+
+    @Autowired
     private Analyzer analyzer;
 
     @Autowired
-    public void setParser(Parser parser) {
-        this.parser = parser;
-    }
-
-    @Autowired
-    public void setGenerator(Generator generator) {
-        this.generator = generator;
-    }
-
-    @Autowired
-    public void setAnalyzer(Analyzer analyzer) {
-        this.analyzer = analyzer;
-    }
+    private Concurrent concurrent;
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
@@ -53,49 +40,27 @@ public class Application implements CommandLineRunner {
             case "concurrent": {
                 List<String> dictionary = Files.readAllLines(Paths.get(params.get("dictionary")));
                 Integer count = Integer.valueOf(params.get("count"));
-                Queue<String> queue = new ConcurrentLinkedQueue<>();
-                ExecutorService es = Executors.newFixedThreadPool(2);
-                es.execute(() -> {
-                    for (int i = 0; i < count; i++) {
-                        queue.offer(generator.nextRandomWord(dictionary));
-                    }
-                    queue.offer("KILL_ME");
-                });
-                Future<Map<String, Integer>> result = es.submit(() -> {
-                    String word;
-                    Map<String, Integer> wordsOccurrence = new TreeMap<>();
-                    do {
-                        while ((word = queue.poll()) == null) {
-                            try {
-                                Thread.sleep(10);
-                            } catch (InterruptedException e) {
-                                return wordsOccurrence;
-                            }
-                        }
-                        if (word.equalsIgnoreCase("KILL_ME")) {
-                            return wordsOccurrence;
-                        }
-                        Integer oldCount = wordsOccurrence.getOrDefault(word, 0);
-                        wordsOccurrence.put(word, oldCount + 1);
-                    } while (true);
-                });
-                System.out.println(result.get());
-                es.shutdown();
+                Map<String, Integer> wordsOccurrence = concurrent.generateAndAnalyzeWords(count, dictionary);
+                Iterable<String> mapAsIterable = () -> wordsOccurrence.entrySet().stream()
+                                                                    .map(e -> e.getKey() + " >> " + e.getValue())
+                                                                    .iterator();
+                Files.write(Paths.get("result.txt"), mapAsIterable);
                 break;
             }
             case "generate": {
                 List<String> dictionary = Files.readAllLines(Paths.get(params.get("dictionary")));
-                List<String> randomWords = generator.generateWords(Integer.valueOf(params.get("count")), dictionary);
+                Integer count = Integer.valueOf(params.get("count"));
+                List<String> randomWords = generator.generateWords(count, dictionary);
                 Files.write(Paths.get(params.get("output")), randomWords);
                 break;
             }
             case "analyze": {
                 List<String> words = Files.readAllLines(Paths.get(params.get("input")));
                 Map<String, Long> wordsOccurrence = analyzer.analyzeWords(words);
-                Iterable<String> mapIterable = () -> wordsOccurrence.entrySet().stream()
+                Iterable<String> mapAsIterable = () -> wordsOccurrence.entrySet().stream()
                                                                     .map(e -> e.getKey() + " >> " + e.getValue())
                                                                     .iterator();
-                Files.write(Paths.get("result.txt"), mapIterable);
+                Files.write(Paths.get("result.txt"), mapAsIterable);
                 break;
             }
             default: {
