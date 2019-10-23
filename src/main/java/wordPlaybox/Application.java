@@ -1,9 +1,13 @@
 package wordPlaybox;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.core.env.Environment;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -33,7 +37,6 @@ public class Application implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         Map<String, String> params = parser.parseCmdLine(args);
-        System.out.println(params);
         Instant startTime = Instant.now();
         String action = params.getOrDefault("action", "");
         switch (action) {
@@ -41,10 +44,7 @@ public class Application implements CommandLineRunner {
                 List<String> dictionary = Files.readAllLines(Paths.get(params.get("dictionary")));
                 Integer count = Integer.valueOf(params.get("count"));
                 Map<String, Integer> wordsOccurrence = concurrent.generateAndAnalyzeWords(count, dictionary);
-                Iterable<String> mapAsIterable = () -> wordsOccurrence.entrySet().stream()
-                                                                    .map(e -> e.getKey() + " >> " + e.getValue())
-                                                                    .iterator();
-                Files.write(Paths.get("result.txt"), mapAsIterable);
+                Files.write(Paths.get("result.txt"), wordsOccurrence.toString().getBytes());
                 break;
             }
             case "generate": {
@@ -58,8 +58,8 @@ public class Application implements CommandLineRunner {
                 List<String> words = Files.readAllLines(Paths.get(params.get("input")));
                 Map<String, Long> wordsOccurrence = analyzer.analyzeWords(words);
                 Iterable<String> mapAsIterable = () -> wordsOccurrence.entrySet().stream()
-                                                                    .map(e -> e.getKey() + " >> " + e.getValue())
-                                                                    .iterator();
+                                                                      .map(e -> e.getKey() + " >> " + e.getValue())
+                                                                      .iterator();
                 Files.write(Paths.get("result.txt"), mapAsIterable);
                 break;
             }

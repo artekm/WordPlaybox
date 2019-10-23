@@ -27,9 +27,10 @@ public class ParserImpl implements Parser {
             CommandLine cmd = parser.parse(options, args);
 
             Map<String, String> params = options.getOptions().stream()
-                                                .map(Option::getLongOpt)
+                                                .map(option -> option.getLongOpt().toLowerCase())
                                                 .filter(cmd::hasOption)
-                                                .collect(Collectors.toMap(Function.identity(), cmd::getOptionValue));
+                                                .collect(Collectors.toMap(Function.identity(),
+                                                                        opt -> cmd.getOptionValue(opt).toLowerCase()));
             checkRequiredParameters(params);
             return params;
         } catch (ParseException e) {

@@ -26,8 +26,6 @@ public class ApplicationTest {
     @Test
     public void generatesWords() throws Exception {
         String[] args = "--action concurrent --count 100 --dictionary english10000.txt --output words.txt".split(" ");
-        when(generatorMock.nextRandomWord(anyList())).thenReturn("abcdef");
         app.run(args);
-        assertEquals("abcdef",generatorMock.nextRandomWord(Collections.emptyList()));
     }
 }

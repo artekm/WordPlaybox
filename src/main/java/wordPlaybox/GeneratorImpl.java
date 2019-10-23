@@ -20,10 +20,5 @@ public class GeneratorImpl implements Generator {
                         .mapToObj(dictionary::get)
                         .collect(Collectors.toList());
     }
-
-    @Override
-    public String nextRandomWord(List<String> dictionary) {
-        return dictionary.get(random.nextInt(dictionary.size()));
-    }
 }
 

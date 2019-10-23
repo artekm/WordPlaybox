@@ -23,9 +23,8 @@ public class ConcurrentImpl implements Concurrent {
         Queue<String> queue = new ConcurrentLinkedQueue<>();
         ExecutorService es = Executors.newFixedThreadPool(2);
         es.execute(() -> {
-            for (int i = 0; i < count; i++) {
-                queue.offer(generator.nextRandomWord(dictionary));
-            }
+            List<String> randomWords = generator.generateWords(count, dictionary);
+            randomWords.forEach(queue::offer);
             queue.offer("KILL_ME");
         });
         Future<Map<String, Integer>> result = es.submit(() -> {
@@ -33,17 +32,12 @@ public class ConcurrentImpl implements Concurrent {
             Map<String, Integer> wordsOccurrence = new TreeMap<>();
             do {
                 while ((word = queue.poll()) == null) {
-                    try {
-                        Thread.sleep(10);
-                    } catch (InterruptedException e) {
-                        return wordsOccurrence;
-                    }
+                    Thread.sleep(10);
                 }
                 if (word.equalsIgnoreCase("KILL_ME")) {
                     return wordsOccurrence;
                 }
-                Integer oldCount = wordsOccurrence.getOrDefault(word, 0);
-                wordsOccurrence.put(word, oldCount + 1);
+                wordsOccurrence.merge(word, 1, Integer::sum);
             } while (true);
         });
         Map<String, Integer> wordsOccurrence = result.get();
