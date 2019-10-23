@@ -18,9 +18,4 @@ public class GeneratorImpl2 implements Generator {
         }
         return randomWords;
     }
-
-    @Override
-    public String nextRandomWord(List<String> dictionary) {
-        return dictionary.get(random.nextInt(dictionary.size()));
-    }
 }

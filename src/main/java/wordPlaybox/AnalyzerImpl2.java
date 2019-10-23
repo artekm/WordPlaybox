@@ -13,10 +13,7 @@ public class AnalyzerImpl2 implements Analyzer {
     @Override
     public Map<String, Long> analyzeWords(List<String> words) {
         Map<String, Long> wordsOccurrence = new TreeMap<>();
-        words.forEach(word -> {
-            Long oldValue = wordsOccurrence.getOrDefault(word, 0L);
-            wordsOccurrence.put(word, oldValue + 1);
-        });
+        words.forEach(word -> wordsOccurrence.merge(word, 1L, Long::sum));
         return wordsOccurrence;
     }
 }
