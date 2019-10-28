@@ -7,11 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Collections;
-
-import static org.mockito.Mockito.anyList;
-import static org.mockito.Mockito.when;
-import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -21,11 +17,22 @@ public class ApplicationTest {
     private Application app;
 
     @MockBean
+    private Concurrent concurrentMock;
+
+    @MockBean
     private Generator generatorMock;
 
     @Test
-    public void generatesWords() throws Exception {
+    public void concurrent_call() throws Exception {
         String[] args = "--action concurrent --count 100 --dictionary english10000.txt --output words.txt".split(" ");
         app.run(args);
+        verify(concurrentMock).generateAndAnalyzeWords(eq(100), anyList());
+    }
+
+    @Test
+    public void generate_call() throws Exception {
+        String[] args = "--action generate --count 100 --dictionary english10000.txt --output words.txt".split(" ");
+        app.run(args);
+        verify(generatorMock).generateWords(eq(100), anyList());
     }
 }
