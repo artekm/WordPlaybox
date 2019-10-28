@@ -22,6 +22,9 @@ public class ApplicationTest {
     @MockBean
     private Generator generatorMock;
 
+    @MockBean
+    private Analyzer analyzerMock;
+
     @Test
     public void concurrent_call() throws Exception {
         String[] args = "--action concurrent --count 100 --dictionary english10000.txt --output words.txt".split(" ");
@@ -34,5 +37,12 @@ public class ApplicationTest {
         String[] args = "--action generate --count 100 --dictionary english10000.txt --output words.txt".split(" ");
         app.run(args);
         verify(generatorMock).generateWords(eq(100), anyList());
+    }
+
+    @Test
+    public void analyze_call() throws Exception {
+        String[] args = "--action analyze --input words.txt".split(" ");
+        app.run(args);
+        verify(analyzerMock).analyzeWords(anyList());
     }
 }
