@@ -34,7 +34,7 @@ public class ParserImpl implements Parser {
             checkRequiredParameters(params);
             return params;
         } catch (ParseException e) {
-            throw new IllegalArgumentException(e.getCause());
+            throw new IllegalArgumentException(e);
         }
     }
 

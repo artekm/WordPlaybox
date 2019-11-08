@@ -3,11 +3,13 @@ package wordPlaybox;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.mockito.Mockito.*;
 
@@ -27,24 +29,45 @@ public class ApplicationTest {
     @MockBean
     private Analyzer analyzerMock;
 
+    @MockBean
+    private Parser parserMock;
+
     @Test
     public void concurrent_call() throws Exception {
-        String[] args = "--action concurrent --count 100 --dictionary english10000.txt --output words.txt".split(" ");
-        app.run(args);
-        verify(concurrentMock).generateAndAnalyzeWords(eq(100), anyList());
+        Map<String, String> params = new HashMap<>();
+        params.put("action", "concurrent");
+        params.put("count", "100");
+        params.put("dictionary", "singleword.txt");
+        when(parserMock.parseCmdLine(any())).thenReturn(params);
+
+        app.run("");
+        verify(concurrentMock).generateAndAnalyzeWords(100, Collections.singletonList("jeden"));
+        verifyNoMoreInteractions(concurrentMock);
     }
 
     @Test
     public void generate_call() throws Exception {
-        String[] args = "--action generate --count 100 --dictionary english10000.txt --output words.txt".split(" ");
-        app.run(args);
-        verify(generatorMock).generateWords(eq(100), anyList());
+        Map<String, String> params = new HashMap<>();
+        params.put("action", "generate");
+        params.put("count", "100");
+        params.put("dictionary", "singleword.txt");
+        params.put("output", "words.txt");
+        when(parserMock.parseCmdLine(any())).thenReturn(params);
+
+        app.run("");
+        verify(generatorMock).generateWords(100, Collections.singletonList("jeden"));
+        verifyNoMoreInteractions(generatorMock);
     }
 
     @Test
     public void analyze_call() throws Exception {
-        String[] args = "--action analyze --input words.txt".split(" ");
-        app.run(args);
-        verify(analyzerMock).analyzeWords(anyList());
+        Map<String, String> params = new HashMap<>();
+        params.put("action", "analyze");
+        params.put("input", "singleword.txt");
+        when(parserMock.parseCmdLine(any())).thenReturn(params);
+
+        app.run("");
+        verify(analyzerMock).analyzeWords(Collections.singletonList("jeden"));
+        verifyNoMoreInteractions(analyzerMock);
     }
 }

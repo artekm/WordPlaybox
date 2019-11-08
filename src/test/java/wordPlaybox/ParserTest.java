@@ -3,14 +3,11 @@ package wordPlaybox;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Map;
 
-import static org.junit.Assert.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
@@ -42,5 +39,17 @@ public class ParserTest {
         String[] args = "--action analyze --input words.txt".split(" ");
         Map<String, String> params = parser.parseCmdLine(args);
         assertThat(params).contains(entry("action", "analyze"), entry("input", "words.txt"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void checkRequiredParameters_throwsException_whenMandatoryArgumentMissing() {
+        String[] args = "--action analyze".split(" ");
+        Map<String, String> params = parser.parseCmdLine(args);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void parseCmdLine_throwsException_whenArgumentValueMissing() {
+        String[] args = "--action analyze --input".split(" ");
+        Map<String, String> params = parser.parseCmdLine(args);
     }
 }
