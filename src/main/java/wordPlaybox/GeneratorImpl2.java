@@ -14,8 +14,14 @@ public class GeneratorImpl2 implements Generator {
     public List<String> generateWords(Integer count, List<String> dictionary) {
         List<String> randomWords = new ArrayList<>();
         for (int num = 0; num < count; num++) {
-            randomWords.add(dictionary.get(random.nextInt(dictionary.size())));
+            randomWords.add(generateSingleWord(dictionary));
         }
         return randomWords;
     }
+
+    @Override
+    public String generateSingleWord(List<String> dictionary) {
+        return dictionary.get(random.nextInt(dictionary.size()));
+    }
+
 }

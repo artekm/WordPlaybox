@@ -23,8 +23,10 @@ public class ConcurrentImpl implements Concurrent {
         Queue<String> queue = new ConcurrentLinkedQueue<>();
         ExecutorService es = Executors.newFixedThreadPool(2);
         es.execute(() -> {
-            List<String> randomWords = generator.generateWords(count, dictionary);
-            randomWords.forEach(queue::offer);
+            for (int num = 0; num < count; num++) {
+                String word = generator.generateSingleWord(dictionary);
+                queue.offer(word);
+            }
             queue.offer("KILL_ME");
         });
         Future<Map<String, Integer>> result = es.submit(() -> {

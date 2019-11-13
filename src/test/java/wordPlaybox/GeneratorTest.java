@@ -26,4 +26,14 @@ public class GeneratorTest {
         assertEquals(10, words.size());
         assertTrue(dictionary.containsAll(words));
     }
+
+    @Test
+    public void generateSingleWord_returnsRandomWord_forGivenDictionary() {
+        List<String> dictionary = Arrays.asList("Jeden", "Dwa", "Trzy", "Cztery");
+        for (int repeat = 0; repeat < 10; repeat++) {
+            String word = generator.generateSingleWord(dictionary);
+            assertTrue(dictionary.contains(word));
+        }
+    }
+
 }
